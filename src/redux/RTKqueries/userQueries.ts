@@ -20,27 +20,35 @@ export const userApi = createApi({
             return headers;
           },
      }),
+     tagTypes:["User"],
     endpoints: (build) => ({
+        updateUserFollowers: build.mutation({
+            query: (followerId) => ({
+                url: '/user/follow',  
+                method: 'PUT',
+                body:followerId
+            }),
+            invalidatesTags:["User"]
+        }),
+        
         getUserProfile: build.query({
             query: (id) => ({
             url:`/user/${id}`,
             method:"GET",  
 
-        })
+        }),    
+        providesTags: ["User"],
           }),
+    
         getAllUsersData: build.query({
             query: (body) => ({
                 url: '/user',  
                 method: 'GET',
             }),
+            providesTags: ["User"],
         }),
 
-        updateUserFollowers: build.query({
-            query: (body) => ({
-                url: '/user',  
-                method: 'GET',
-            }),
-        }),
+ 
 
         searchUsersByName: build.query({
             query: (searchData) => ({
@@ -51,4 +59,4 @@ export const userApi = createApi({
     })
 })
 
- export const {useGetAllUsersDataQuery, useSearchUsersByNameQuery, useGetUserProfileQuery}=userApi
+ export const {useGetAllUsersDataQuery, useSearchUsersByNameQuery, useGetUserProfileQuery, useUpdateUserFollowersMutation}=userApi

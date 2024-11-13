@@ -6,8 +6,8 @@ import authReducer from "./slices/authSlice"
 import { authApi } from "./RTKqueries/authQueries";
 
 const rootReducer = combineReducers({
-    userReducer,
-    authReducer,
+    userReducer, 
+    auth:authReducer,
     [userApi.reducerPath]: userApi.reducer,
     [postApi.reducerPath]:postApi.reducer,
     [authApi.reducerPath]:authApi.reducer})

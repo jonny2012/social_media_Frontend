@@ -6,14 +6,16 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { Link, useParams } from "react-router-dom";
+
  export const DrawerList = ({ toggleDrawer,open}:any)=>{
-  const userId = localStorage.getItem("userId")
+   
+  const id = localStorage.getItem("userId")
     const pages = [
-        {   link:"/home",
+        {   link:"/",
             image:<HomeOutlinedIcon  />,
             text:"Home"
         },
-        {   link:"/home",
+        {   link:"/",
             image:<SearchOutlinedIcon />,
             text:"Search"
 
@@ -30,7 +32,7 @@ import { Link, useParams } from "react-router-dom";
             image:<FavoriteBorderOutlinedIcon />,
             text:"Notification"
         },
-        {link:`/profile/${userId}`,
+        {link:`/profile/${id}`,
             image:<AddCircleOutlineOutlinedIcon />,
             text:"Profile"
         }

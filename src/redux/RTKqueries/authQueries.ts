@@ -4,11 +4,14 @@ import { RootState } from "@reduxjs/toolkit/query/react";
 
 export interface User {
     user: any;
+    status:number,
     token(token: any): { payload: string; type: "auth/setToken"; };
     id: number | undefined,
     username: string | undefined,
     email: string,
-    password: string
+    password: string,
+    fullName:string,
+    profileImage:string,
 }
 
 export const authApi = createApi({
@@ -26,7 +29,7 @@ export const authApi = createApi({
             }),
         },
         ),
-        registerUser: build.mutation<User, Partial<User>>({
+        registerUser: build.mutation<any, any>({
             query: (body) => ({
                 url: "/register",
                 method: "POST",

@@ -6,7 +6,7 @@ import Post from "../Post";
 export const HomePage = ()=>{
 
     const { data:postData, error, isLoading } = useGetAllPostsQuery("");
-    console.log(postData)
+console.log(postData)
     return (
         <Box sx={{display: "grid",
             gridTemplateColumns: "1fr 1fr",
@@ -15,7 +15,7 @@ export const HomePage = ()=>{
         }}>
         {postData && postData.map((post:any, index:number) => (
           <Box key={index} sx={{width:"400px"}}>
-            <Post postId={post._id} user={post["userId"]} imageUrl={post.image}  likes={post.likes} comments={post.comments} />
+            <Post postId={post._doc._id} user={post._doc["userId"]} imageUrl={post._doc.image}  likes={post._doc.likes} isFollow={post._doc.isFollow} comments={post._doc.comments} />
        
           </Box>
         ))}

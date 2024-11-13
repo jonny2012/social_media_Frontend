@@ -13,8 +13,6 @@ export default function TemporaryDrawer({toggleDrawer,open}:any) {
 
     const {data:userData, error, isLoading}= useSearchUsersByNameQuery(inputData)
  
- 
-  
     const handleChange = (e:any)=>{
       if(e.target.value !== null  ){
       setInputData(e.target.value)

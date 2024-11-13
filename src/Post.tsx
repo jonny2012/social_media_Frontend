@@ -4,34 +4,51 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useCreatePostCommentsMutation } from './redux/RTKqueries/postQueries';
+import { useUpdateUserFollowersMutation} from './redux/RTKqueries/userQueries';
 import { Link } from 'react-router-dom';
 
 
-const Post = ({postId, user, imageUrl,  likes, comments, }:any) => {
+const Post = ({postId, user, imageUrl,  likes, comments, isFollow }:any) => {
+console.log(user)
 
   const [comment, setComment] = useState('');
-  const userId = "673242deb8c9ec294c571f64"
+  const userId = localStorage.getItem("userId")
   const sendData = {userId, comment}
-  const [createComment, {data, error, isLoading}]= useCreatePostCommentsMutation()
-  console.log(data)
 
+  const [createComment, {data:commentData, error:commentError, isLoading:commentIsLoading}]= useCreatePostCommentsMutation()
+ const [follow, {data, error, isLoading}]= useUpdateUserFollowersMutation()
   const handleCommentChange = (e:ChangeEvent<HTMLInputElement>) => setComment(e.target.value);
 
   const handleCommentSubmit = (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
  createComment({userId, postId, comment})
-    setComment(''); // Clear the comment input after submission
+    setComment(''); 
   };
+
+  const checkFollow =()=>{
+    let followValue:string = ""
+    if(user.follows.includes(userId)){
+      followValue ="Unfollow"
+    }
+    else{
+      followValue = "Follow"
+    }
+    return followValue
+  }
+
 
 return (
     <Card sx={{ maxWidth: "100%", mx: 'auto', my: 2 }}>
-      <Link to={`/profile/${user._id}`}>
+ 
       <Box>
     <CardHeader
-      avatar={<Avatar src={`http://localhost:5000/avatar/${user.profileImage}`} alt={user.fullName} />}
+      avatar={<Link to={`/user/${user._id}`}><Avatar src={`http://localhost:5000/avatar/${user.profileImage}`} alt={user.fullName} /></Link>}
       title={user.fullName}
-      action={<Typography sx={{ color: 'blue', cursor: 'pointer' }}>Follow</Typography>}
-    />
+      action={<Button onClick={()=>{
+        console.log(data)
+       return follow({ folowerId:user?._id})}} variant='contained'>{isFollow ? data.message ||checkFollow(): data.message}</Button>}
+    >
+   </CardHeader>
     <CardMedia
       component="img"
       height="100%"
@@ -41,7 +58,7 @@ return (
     />
     
     </Box>
-    </Link>
+
     <CardContent>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <IconButton><FavoriteBorderIcon /></IconButton>

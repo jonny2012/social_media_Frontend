@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import { Box, Typography, TextField, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useGetLoginUserMutation } from "./../redux/RTKqueries/authQueries" // Import the login mutation hook
 import { setToken } from '../redux/slices/authSlice'; // Import the action to set token in Redux
+import { redirect, replace, useNavigate } from 'react-router-dom';
+
+interface LoginResponse {
+
+  status: number;
+  token: string;
+  user: {
+    id: string;
+    email:string,
+    username:string
+  }
+  message?:string,
+}
 
 const Login = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const [login, { data, isLoading, error }] = useGetLoginUserMutation();
   const [email, setEmail] = useState('');
@@ -14,15 +29,21 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await login({ email, password }).unwrap();
-      console.log(result)
-      dispatch(setToken(result.token as unknown as string)); // Save token in Redux and localStorage
-      localStorage.setItem("userId", result.user.id as string)
+      const result:any = await login({ email, password }).unwrap();
+      if (result && result.status === 200) {
+        const { token, user } = result;
+
+        if (token && user) {
+   
+        dispatch(setToken({ token:result.token,user:result.user })); 
+        localStorage.setItem("userId", result.user.id as string)
+       navigate("/", {replace:true})
+        }}
+      
     } catch (err) {
       console.error('Login failed:', err);
     }
   };
-  console.log(email,password)
 
   return (
     <Box sx={{ maxWidth: 300, mx: 'auto', mt: 8, textAlign: 'center' }}>
@@ -32,6 +53,7 @@ const Login = () => {
       <form onSubmit={handleLogin}>
         <TextField
           fullWidth
+          
           label="Username, or email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -57,16 +79,16 @@ const Login = () => {
         </Button>
         {error && (
           <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-            Login failed. Please check your credentials.
+            Login failed
           </Typography>
         )}
       </form>
-      <Link href="#" variant="body2" sx={{ display: 'block', mt: 2 }}>
+      <Typography  variant="body2" sx={{ display: 'block', mt: 2 }}>
         Forgot password?
-      </Link>
+      </Typography>
       <Typography variant="body2" sx={{ mt: 4 }}>
         Don’t have an account?{' '}
-        <Link href="#">
+        <Link style={{color:"blue"}} to={"/register"}>
           Sign up
         </Link>
       </Typography>

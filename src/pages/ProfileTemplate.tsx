@@ -3,10 +3,10 @@ import { Box, Avatar, Typography, Button } from '@mui/material';
 import { useGetUserProfileQuery } from '../redux/RTKqueries/userQueries';
 import { useParams } from 'react-router-dom';
 
-function ProfileHeader() {
-  
-    const userId = localStorage.getItem("userId")
-    const {data:profile, error, isLoading}= useGetUserProfileQuery(userId)
+function ProfileTemplate() {
+  const {id}= useParams()
+    
+    const {data:profile, error, isLoading}= useGetUserProfileQuery(id)
 
   return (
     <Box sx={{ maxWidth: 800, margin: '0 auto', textAlign: 'center', display:"flex", gap:"40px",  padding: 3 }}>
@@ -49,7 +49,7 @@ function ProfileHeader() {
           <Typography textAlign={"center"} variant="caption" color="textSecondary">posts</Typography>
         </Box>
         <Box sx={{ textAlign: 'center',display:"flex", gap:"5px"}}>
-          <Typography variant="body2" fontWeight="bold">{profile?.followers?.length || 0}</Typography>
+          <Typography variant="body2" fontWeight="bold">{profile?.follows?.length }</Typography>
           <Typography textAlign={"center"} variant="caption" color="textSecondary">followers</Typography>
         </Box>
         <Box sx={{ textAlign: 'center',display:"flex",gap:"5px" }}>
@@ -73,4 +73,4 @@ function ProfileHeader() {
   );
 }
 
-export default ProfileHeader;
+export default ProfileTemplate;
