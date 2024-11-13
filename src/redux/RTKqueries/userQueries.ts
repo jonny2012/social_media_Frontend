@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { RootState } from "@reduxjs/toolkit/query/react";
 
 
 export interface User {
@@ -8,49 +9,46 @@ export interface User {
     password: string
 }
 
-
 export const userApi = createApi({
     reducerPath: "userAPI",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
-    tagTypes: ["likes"],
+    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api",   
+        prepareHeaders: (headers, { getState }) => {
+            const token =  localStorage.getItem('token');
+            if (token) {
+              headers.set('authorization', `Bearer ${token}`);
+            }
+            return headers;
+          },
+     }),
     endpoints: (build) => ({
-        getLoginUser: build.mutation<User, Partial<User>>({
-            query: (body) => ({
-                url: "/auth/login",
-                method: "POST",
-                body
-            }),
-        },
-
-        ),
-        getAllPosts: build.query({
+        getUserProfile: build.query({
             query: (id) => ({
-                url: "post",
-                method: "GET"
-            }),
-            providesTags: (result, error, arg) => [{ type: "likes", id: "All" }],
-        }),
-
-        updatePostLikes: build.mutation({
-            query: ({ postId, rest }) => ({
-                url: `post/add-like/${postId}`,
-                method: "PUT",
-                body: rest
-            }),
-            invalidatesTags: (result, error, { postId }) => [{ type: "likes", postId }]
-        }),
-
-        registerUser: build.mutation<User, Partial<User>>({
-            query: (body) => ({
-                url: "/user/register",
-                method: "POST",
-                body
-            })
+            url:`/user/${id}`,
+            method:"GET",  
 
         })
+          }),
+        getAllUsersData: build.query({
+            query: (body) => ({
+                url: '/user',  
+                method: 'GET',
+            }),
+        }),
 
+        updateUserFollowers: build.query({
+            query: (body) => ({
+                url: '/user',  
+                method: 'GET',
+            }),
+        }),
+
+        searchUsersByName: build.query({
+            query: (searchData) => ({
+                url: `/search/?name=${searchData}`,  
+                method: 'GET',
+            }),
+        }),
     })
-
 })
-export const { useGetAllPostsQuery, useUpdatePostLikesMutation } = userApi
 
+ export const {useGetAllUsersDataQuery, useSearchUsersByNameQuery, useGetUserProfileQuery}=userApi

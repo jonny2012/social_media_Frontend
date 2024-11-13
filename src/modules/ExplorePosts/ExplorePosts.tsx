@@ -1,38 +1,32 @@
 import { Box, Container, Typography,Grid2, ImageList, ImageListItem } from "@mui/material"
-import { useGetAllPostsQuery } from "../../redux/RTKqueries/userQueries";
-
+import { useGetAllPostsQuery } from "../../redux/RTKqueries/postQueries";
 
 
 export const  ExplorePosts = ({isOpenDrawer}:any)=>{
     const { data:postData, error, isLoading } = useGetAllPostsQuery(undefined);
     return (
-        
-        <Box sx={{ flexGrow: 1, padding: 2 }+ isOpenDrawer?{marginLeft:"600px"}:{marginLeft:"380px",maxWidth:"970px"} }>
-        <Grid2 container spacing={2}>
+        <Container sx={{  padding: 2 } }>
+      
+        <Box sx={{width:"957px", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"3px"}}>
+          
           { postData && postData.map((post:any, index:number) => (
-            <Grid2
-                           // Each image takes 4 columns on medium screens
-              key={index}
-              sx={{
-                height: 
-                  ((index+1) % 3 === 0 && index !==0) ? '400px' : '200px', // Double height for 2nd, 4th, and 9th images
-              }}
-            >
+        
               <Box
+              key={index}
                 component="img"
-                src={`http://localhost:5000/posts/${post.image}`}       // Image source from backend
+                src={`http://localhost:5000/posts/${post.image}`}    
                 alt={`image-${index}`}
                 sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  borderRadius: 1,
+                  width: '316px',
+                  height: '316px',
+                  objectFit:"fill",
+       
                 }}
               />
-            </Grid2>
+       
           ))}
-        </Grid2>
-      </Box>
+        </Box>
+      </Container>
   
       
     )

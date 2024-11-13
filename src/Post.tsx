@@ -1,82 +1,81 @@
-import { FormEventHandler, useState } from "react";
-import { useUpdatePostLikesMutation } from "./redux/RTKqueries/userQueries";
-import {
-  useCreatePostCommentsMutation,
-  useGetAllPostCommentsQuery,
-} from "./redux/RTKqueries/postQueries";
+import { Card, CardHeader,Button, CardMedia, CardContent, Typography, Avatar, IconButton, Box, TextField } from '@mui/material';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ShareIcon from '@mui/icons-material/Share';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import { useCreatePostCommentsMutation } from './redux/RTKqueries/postQueries';
+import { Link } from 'react-router-dom';
 
-export const Post = ({ postData }: any) => {
-  const [isLiked, setIsLiked] = useState(true);
-  const [inputValue, setInputValue] = useState<string>("");
-  const [postId, setPostId] = useState<string>();
-  const [updatePostLikes, { data, isLoading: newData }] =
-    useUpdatePostLikesMutation();
 
-  const [createComment, { data: commentData, error, isLoading }] =
-    useCreatePostCommentsMutation();
+const Post = ({postId, user, imageUrl,  likes, comments, }:any) => {
 
-  if (isLoading) return <div>...Loading</div>;
-  const handleSubmit: FormEventHandler<HTMLButtonElement> = async (e) => {
-    setPostId(postData._id);
-    if (inputValue.trim()) {
-      await createComment({
-        userId: postData.userId,
-        postId: postData._id,
-        comment: inputValue,
-      });
-      setInputValue("");
-    }
-    console.log(postData);
-  };
-  const rest = {
-    userId: "672c070d5872d1dab5fc56d1",
+  const [comment, setComment] = useState('');
+  const userId = "673242deb8c9ec294c571f64"
+  const sendData = {userId, comment}
+  const [createComment, {data, error, isLoading}]= useCreatePostCommentsMutation()
+  console.log(data)
+
+  const handleCommentChange = (e:ChangeEvent<HTMLInputElement>) => setComment(e.target.value);
+
+  const handleCommentSubmit = (e:FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+ createComment({userId, postId, comment})
+    setComment(''); // Clear the comment input after submission
   };
 
-  return (
-    <div style={{ border: "1px solid black", padding: "20px" }}>
-      <img
-        style={{ width: "100px", height: "100px" }}
-        src={`http://localhost:5000/posts/${postData.image}`}
-        alt={postData.image}
-      />
-      <p>likes: {postData.likes.length}</p>
-      <button
-        style={{ color: "red" }}
-        onClick={(e) => {
-          updatePostLikes({ postId: postData._id, rest });
-          console.log(e.target);
-        }}
-      >
-        {postData._id} {isLiked ? "Like" : "Dislike"}
-      </button>
-      <p>comments: {postData.comments.length}</p>
-      <div>
-        {postData?.comments.map((el: any) => (
-          <div key={el._id}>
-            <p>comment {el.comment}</p>
-            <p>user: {el.userId.username}</p>
-          </div>
-        ))}
-        {/* <div>
-          {commentData &&
-            commentData?.map((element: any) => (
-              <div key={element._id}>
-                <p>comment {element.comment}</p>
-                <p>user: {element.userId.username}</p>
-              </div>
-            ))}
-        </div> */}
-      </div>
-      <div>
-        {" "}
-        <input
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          type="text"
-          placeholder=" type Comment"
-        />
-        <button onClick={handleSubmit}> Send</button>
-      </div>
-    </div>
-  );
-};
+return (
+    <Card sx={{ maxWidth: "100%", mx: 'auto', my: 2 }}>
+      <Link to={`/profile/${user._id}`}>
+      <Box>
+    <CardHeader
+      avatar={<Avatar src={`http://localhost:5000/avatar/${user.profileImage}`} alt={user.fullName} />}
+      title={user.fullName}
+      action={<Typography sx={{ color: 'blue', cursor: 'pointer' }}>Follow</Typography>}
+    />
+    <CardMedia
+      component="img"
+      height="100%"
+      
+      image={`http://localhost:5000/posts/${imageUrl}`}
+      alt="Post image"
+    />
+    
+    </Box>
+    </Link>
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <IconButton><FavoriteBorderIcon /></IconButton>
+        <IconButton><ChatBubbleOutlineIcon /></IconButton>
+        <IconButton><ShareIcon /></IconButton>
+      </Box>
+      <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+        <strong>{likes.length}</strong> likes
+      </Typography>
+      <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+        <strong>{user.fullName}</strong>
+      </Typography>
+      <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 1 }}>
+        View all {comments.length} comments
+      </Typography>
+      <CardContent sx={{ borderTop: '1px solid #eee', pt: 1 }}>
+        <form onSubmit={handleCommentSubmit}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <TextField
+              fullWidth
+              variant="standard"
+              placeholder="Add a comment..."
+              value={comment}
+              onChange={handleCommentChange}
+              sx={{ mr: 1 }}
+            />
+            <Button type="submit" color="primary" disabled={!comment}>
+              Post
+            </Button>
+          </Box>
+        </form>
+      </CardContent>
+    </CardContent>
+  </Card>
+  
+)}
+export default Post;
